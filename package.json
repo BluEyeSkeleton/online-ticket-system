@@ -1,0 +1,22 @@
+{
+  "name": "online-ticket-system",
+  "version": "1.0.0",
+  "description": "An online ticket system that creates and validates digital ticket through QR codes.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/BluEyeSkeleton/online-ticket-system.git"
+  },
+  "author": "BluEyeSkeleton",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/BluEyeSkeleton/online-ticket-system/issues"
+  },
+  "homepage": "https://github.com/BluEyeSkeleton/online-ticket-system#readme",
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
