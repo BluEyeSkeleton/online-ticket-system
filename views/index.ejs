@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <%- include('./partials/head'); %>
+    <title>Home | OTiS</title>
+  </head>
+
+  <body>
+    <script
+      src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"
+      integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-Fy6S3B9q64WdZWQUiU+q4/2Lc9npb8tCaSX9FK7E8HnRr0Jz8D6OP9dO5Vg3Q9ct"
+      crossorigin="anonymous"
+    ></script>
+    <div class="container">
+      <script>
+        document.getElementById("navbar_home").className = "nav-link active";
+      </script>
+      <div class="jumbotron">
+        <h1 class="display-3">StepOneTwo</h1>
+        <p class="lead">
+          A multipurpose Discord bot. FYI this is just a placeholder page and
+          more content is coming soon!
+        </p>
+        <p>
+          <a
+            role="button"
+            class="btn btn-success"
+            href="https://discord.com/api/oauth2/authorize?client_id=882255088863825921&amp;permissions=59372553633616&amp;scope=bot%20applications.commands"
+            target="_blank"
+          >
+            Add StepOneTwo into my Discord server!
+          </a>
+        </p>
+        <h4>OR</h4>
+        <p>
+          <a
+            role="button"
+            class="btn btn-warning"
+            href="https://discord.com/api/oauth2/authorize?client_id=882255088863825921&amp;permissions=8&amp;scope=bot%20applications.commands"
+            target="_blank"
+          >
+            Add as server administrator (experimental)
+          </a>
+        </p>
+      </div>
+      <%- include('./partials/footer'); %>
+    </div>
+    <!-- /container -->
+  </body>
+</html>

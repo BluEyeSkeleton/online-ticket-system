@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <%- include('./partials/head'); %>
+    <title>Soundboard | StepOneTwo</title>
+    <script>
+      function blurAllButtons(current) {
+        const a = document.getElementsByClassName("dropdown-item");
+        for (let i = 0; i < a.length; i++) {
+          a[i].classList.remove("active");
+        }
+        current.classList.add("active");
+
+        // Emergency fix for #misc
+        //if (current.id == 'miscDropdownItem') {
+        //    const misc = document.getElementById('misc');
+        //    misc.classList.add("active");
+        //    misc.classList.add("show");
+        //}
+      }
+
+      function blurAllDropdowns(current) {
+        const a = document.getElementsByClassName(
+          "accordion-collapse collapse"
+        );
+        for (let i = 0; i < a.length; i++) {
+          a[i].classList.remove("show");
+        }
+        current.classList.add("show");
+      }
+    </script>
+  </head>
+
+  <body>
+    <script
+      src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"
+      integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-Fy6S3B9q64WdZWQUiU+q4/2Lc9npb8tCaSX9FK7E8HnRr0Jz8D6OP9dO5Vg3Q9ct"
+      crossorigin="anonymous"
+    ></script>
+    <div class="container">
+      <%- include('./partials/navbar'); %>
+      <script>
+        document.getElementById("navbar_soundboard").className =
+          "nav-link active";
+      </script>
+      <div class="jumbotron">
+        <h1 class="display-3">Soundboard</h1>
+        <p class="lead">
+          Connect StepOneTwo to a voice channel and play audio!
+        </p>
+      </div>
+      <div class="container">
+        <div class="row">
+          <div class="col-md-4">
+            <!-- Dropdown Menu -->
+            <div class="accordion" id="dropdown" role="tablist">
+              <h2 class="accordion-header" id="members">
+                <!-- Members -->
+                <button
+                  class="accordion-button"
+                  type="button"
+                  data-bs-toggle="collapse"
+                  data-bs-target="#membersDropdown"
+                  aria-expanded="true"
+                  aria-controls="membersDropdown"
+                  onclick="blurAllDropdowns(document.getElementById('membersDropdown'))"
+                >
+                  Members
+                </button>
+              </h2>
+              <div
+                class="accordion-collapse collapse show"
+                id="membersDropdown"
+                data-bs-parent="#dropdown"
+              >
+                <!-- Members Dropdown -->
+                <div class="card card-body accordion-body nav nav-pills">
+                  <?php // Generate dropdown menu for members
+                                $ch = curl_init();
+                                curl_setopt($ch, CURLOPT_URL, 'https://api.github.com/repos/BluEyeSkeleton/dragonpiss-audio/git/trees/master?recursive=1');
+                                curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+                                curl_setopt($ch,CURLOPT_USERAGENT,'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.1.13) Gecko/20080311 Firefox/2.0.0.13');
+                                $data = json_decode(curl_exec($ch));
+                                curl_close($ch);
+
+                                $names = [];
+                                $filenames = [];
+                                foreach ($data->tree as $file) {
+                  array_push($filenames, $file->path); $name =
+                  substr($file->path, 0, strpos($file->path, '_')); if
+                  (!in_array($name, $names) and $name != 'aud')
+                  array_push($names, $name); } foreach ($names as $name) { echo
+                  getDropdownItem($name); } ?>
+                </div>
+              </div>
+              <h2 class="accordion-header" id="miscs">
+                <!-- Misc -->
+                <button
+                  class="accordion-button collapsed"
+                  type="button"
+                  data-bs-toggle="collapse"
+                  data-bs-target="#miscDropdown"
+                  aria-expanded="false"
+                  aria-controls="miscDropdown"
+                  onclick="blurAllDropdowns(document.getElementById('miscDropdown'))"
+                >
+                  Misc
+                </button>
+              </h2>
+              <div
+                class="accordion-collapse collapse"
+                id="miscDropdown"
+                data-bs-parent="#dropdown"
+              >
+                <!-- Misc Dropdown -->
+                <div class="card card-body accordion-body nav nav-pills">
+                  <a
+                    id="miscDropdownItem"
+                    class="dropdown-item"
+                    data-bs-toggle="pill"
+                    href="#misc"
+                    onclick="blurAllButtons(document.getElementById('miscDropdownItem'))"
+                    >Miscellaneous</a
+                  >
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-8">
+            <!-- Start of Content -->
+            <div class="tab-content">
+              <?php // Generate pages for members
+                        $membersFilenames = [];
+                        $miscFilenames = [];
+                        foreach ($filenames as $filename) {
+                            if (strpos($filename, '_') === 0) array_push($miscFilenames, $filename);
+                            if (strpos($filename, '_') !== 0) array_push($membersFilenames, $filename);
+                        }
+                        foreach ($names as $name) {
+                            $memberFilenames = [];
+                            foreach ($membersFilenames as $memberFilename) {
+                                if (strpos($memberFilename, $name) !== false) array_push($memberFilenames, $memberFilename);
+                            }
+                            echo getPage($name, $memberFilenames);
+                        }
+                        echo getPage('misc', $miscFilenames);
+                    ?>
+            </div>
+          </div>
+        </div>
+      </div>
+      <footer class="footer">
+        <p>© 2023 StepOneTwo. All rights reserved.</p>
+      </footer>
+    </div>
+    <!-- /container -->
+  </body>
+</html>
