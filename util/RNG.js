@@ -14,16 +14,29 @@ class RNG {
   }
 
   /**
+   * Generates a random string based on selection of characters
+   * @param {string} chars Selection of characters
+   * @param {integer} length Length of the UID excluding its prefix.
+   * @return {string} String generated.
+   */
+  static str(chars, length) {
+    let result = "";
+    for (let i = 0; i < length; i++)
+      result += chars.charAt(Math.floor(Math.random() * chars.length));
+    return result;
+  }
+
+  /**
    * Generates a random unique ID
    * e.g. U12345678, R987654.
    * @param {string} prefix Prefix of the UID.
-   * @param {*} length Length of the UID excluding its prefix.
+   * @param {integer} length Length of the UID excluding its prefix.
    * @return {string} UID generated.
    */
   static UID(prefix, length) {
     let result = prefix;
     let counter = 0;
-    const chars = '0123456789';
+    const chars = "0123456789";
     while (counter < length) {
       result += chars.charAt(Math.floor(Math.random() * chars.length));
       counter++;

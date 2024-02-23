@@ -22,6 +22,7 @@ const dotenv = require("dotenv");
 
 const noVal = require("./util/noVal");
 const Hash = require("./util/Hash");
+const Ticket = require("./classes/Ticket");
 
 // Initialize dotenv
 dotenv.config();
@@ -44,6 +45,8 @@ app.use(
 );
 // Middleware
 app.use((req, res, next) => {
+  // Add host address to locals
+  res.locals.host = `${ip.address()}:${PORT}`;
   // Add username to locals from session data
   const username = req.session.username;
   if (username) res.locals.username = username;
@@ -54,8 +57,14 @@ app.use((req, res, next) => {
   delete req.session.message;
   res.locals.message = "";
   if (alert)
-    res.locals.message =
-      `<div class="alert alert-${alert}" role="alert">` + msg + "</div>";
+    res.locals.message = `<div class="alert alert-${alert}" role="alert">${msg}</div>`;
+  // Redirect to login page if unauthorized
+  if (
+    req.path !== "/" &&
+    req.path !== "/auth" &&
+    (noVal(req.session.auth) || noVal(req.session.username))
+  )
+    res.redirect("/");
   next();
 });
 app.use(express.json());
@@ -72,14 +81,11 @@ app.all("/ping", (_, res) => {
 
 // Root page
 app.get("/", (req, res) => {
-  if (noVal(req.session.auth) || noVal(req.session.username)) {
+  if (noVal(req.session.auth) || noVal(req.session.username))
     res.render("login");
-  } else {
-    res.render("index");
-  }
+  else res.render("index");
 });
 
-// Login page
 app.get("/soundboard", (req, res) => {
   if (noVal(req.body.token)) res.render("soundboard_placeholder");
   else {
@@ -132,4 +138,6 @@ app.post("/auth", (req, res) => {
 // Listen on PORT (default to 6969)
 httpServer.listen(PORT, () => {
   console.log(`Running on ${ip.address()}:${PORT}`);
+  const ticket = new Ticket();
+  console.log(ticket.id);
 });
