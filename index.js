@@ -23,6 +23,7 @@ const dotenv = require("dotenv");
 const noVal = require("./util/noVal");
 const Hash = require("./util/Hash");
 const Ticket = require("./classes/Ticket");
+const TicketDatabase = require("./util/TicketDatabase");
 
 // Initialize dotenv
 dotenv.config();
@@ -63,8 +64,10 @@ app.use((req, res, next) => {
     req.path !== "/" &&
     req.path !== "/auth" &&
     (noVal(req.session.auth) || noVal(req.session.username))
-  )
+  ) {
     res.redirect("/");
+    res.end();
+  }
   next();
 });
 app.use(express.json());
@@ -86,33 +89,34 @@ app.get("/", (req, res) => {
   else res.render("index");
 });
 
-app.get("/soundboard", (req, res) => {
-  if (noVal(req.body.token)) res.render("soundboard_placeholder");
-  else {
-    // CHANGE THIS IN FUTURE TO VERIFY TOKEN
-    if (!noVal(req.body.token)) {
-      axios
-        .get(
-          "https://api.github.com/repos/BluEyeSkeleton/dragonpiss-audio/git/trees/master?recursive=1",
-          {
-            responseType: "json",
-          }
-        )
-        .then((_res) => {
-          const names = [];
-          const filenames = [];
-          _res.data.tree.foreach((element) => {
-            filenames.push(element.path);
-          });
-          res.render("soundboard", {
-            filenames: filenames,
-          });
-        })
-        .catch((error) => {
-          console.error(error);
-        });
-    }
+// Ticket page
+app.get("/ticket", (_, res) => {
+  // Temporary warning for data auto-formatting
+  res.locals.message += `\
+  <div class="alert alert-warning" role="alert">\
+  Automatic formatting is currently unsupported. \
+  Data consistency shall fall under the admin's responsibility.</div>`;
+  res.locals.tickets = TicketDatabase.fetchAll();
+  console.log(res.locals.tickets);
+  res.render("ticket");
+});
+
+// Request: Modify ticket (id, ticketNo, type, name, icNo)
+app.post("/ticket/modify", (req, res) => {
+  const ticket = new Ticket(req.body.id, {
+    type: req.body.type,
+    name: req.body.name,
+    icNo: req.body.icNo,
+  });
+  if (TicketDatabase.editTicket(ticket, req.body.ticketNo)) {
+    req.session.alert = "success";
+    req.session.msg = "Ticket updated!";
+  } else {
+    req.session.alert = "danger";
+    req.session.msg = "Unknown error occurred, please try again.";
   }
+  res.redirect("/ticket");
+  res.end();
 });
 
 // Authentication
@@ -138,6 +142,4 @@ app.post("/auth", (req, res) => {
 // Listen on PORT (default to 6969)
 httpServer.listen(PORT, () => {
   console.log(`Running on ${ip.address()}:${PORT}`);
-  const ticket = new Ticket();
-  console.log(ticket.id);
 });

@@ -1,8 +1,44 @@
+<!--
+  Local values passed to this page:
+  host: Host address
+  username: Name of the current user
+  message: Alert message from the server in parsed form
+  tickets[]: Map of all tickets obtained from the database
+-->
+
 <!DOCTYPE html>
 <html>
   <head>
     <%- include('./partials/head'); %>
     <title>Ticket | OTiS</title>
+    <script>
+      let placeholders = [],
+        editId = "";
+      const fieldNames = ["ticketNo", "type", "name", "icNo"];
+      const form = document.getElementById("ticketForm");
+      function onEditButtonClicked(id) {
+        editId = id;
+        const tr = document.getElementById(id);
+
+        const inputs = form.getElementsByTagName("input");
+        inputs[0].value = "edit";
+        inputs[1].value = id;
+        const tds = tr.getElementsByTagName("td");
+        for (let i = 0; i < tds.length - 1; i++) {
+          placeholders[i] = tds[i].innerText;
+          tds[i].innerHTML = `<input name="${fieldNames[i]}" \
+          type="text" value="${placeholders[i]}" \
+          class="form-control input-md" required/>`;
+        }
+        tds[tds.length - 1].innerHTML =
+          '<button name="submit" class="btn btn-success">Edit</button>\
+          <a role="button" class="btn btn-danger" onclick="onCancelButtonClicked()">Cancel</button>';
+      }
+
+      function onCancelButtonClicked() {
+        if (editId === "") return;
+      }
+    </script>
   </head>
 
   <body>
@@ -11,24 +47,47 @@
       <%- include('./partials/navbar'); %>
       <!-- Set active navigation button -->
       <script>
-        document.getElementById("navbar_home").className = "nav-link active";
+        document.getElementById("navbar_ticket").className = "nav-link active";
       </script>
+      <!-- message (if any) -->
+      <%- message %>
       <div class="jumbotron">
-        <h1 class="display-3">OnlineTicketSystem</h1>
-        <p class="lead">Getting started</p>
-        <ol>
-          <li>
-            Configure event - add event details, backdrop & ticket design, etc.
-          </li>
-          <li>
-            Create tickets for your dear visitors - Manually assign ticket IDs
-            and send the digital ticket to them
-          </li>
-          <li>
-            Start the event! - Use your mobile device as QR scanner and connect
-            to <b><%- host %></b>
-          </li>
-        </ol>
+        <h2 class="display-3">Ticket Manager</h2>
+        <p class="lead">Create tickets for your dear visitors</p>
+        <form id="ticketForm" method="post" action="/ticket/modify">
+          <input type="hidden" name="action" value="" />
+          <input type="hidden" name="id" value="" />
+          <table class="table table-bordered">
+            <thead>
+              <tr>
+                <th id="ticketNo" scope="col">Ticket No.</th>
+                <th id="type" scope="col">Type</th>
+                <th id="name" scope="col">Name (with title)</th>
+                <th id="icNo" scope="col">Identification No.</th>
+                <th id="action" scope="col">Action</th>
+              </tr>
+            </thead>
+            <tbody id="ticketsTable">
+              <% tickets.forEach((ticket) => { %>
+              <tr id="<%= ticket.id %>">
+                <td><%= ticket.ticketNo %></td>
+                <td><%= ticket.fields.type %></td>
+                <td><%= ticket.fields.name %></td>
+                <td><%= ticket.fields.icNo %></td>
+                <td>
+                  <a
+                    role="button"
+                    class="btn btn-info"
+                    onclick="onEditButtonClicked('<%= ticket.id %>')"
+                  >
+                    Edit
+                  </a>
+                </td>
+              </tr>
+              <% }); %>
+            </tbody>
+          </table>
+        </form>
         <p>
           <a role="button" class="btn btn-success" href="main">Start event!</a>
           <a role="button" class="btn btn-info" href="ticket">
