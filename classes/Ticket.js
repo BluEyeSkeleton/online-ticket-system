@@ -9,45 +9,62 @@ const Hash = require("../util/Hash");
  */
 class Ticket {
   /**
-   * Creates a ticket. Ticket number will only be generated after calling encrypt().
+   * Creates a ticket.
+   * @param {Number} id Ticket ID
+   * @param {Object} fields Custom fields in the ticket
+   * @param {String} fields.type Type of ticket
+   * @param {String} fields.name Ticket owner's name
+   * @param {String} fields.icNo Ticket owner's identification card number
    */
-  constructor() {
-    const obj = {
-      id: RNG.str("abcdefghijklmnopqrstuvwxyz0123456789", 64),
-      fields: [],
-    };
-    this.obj = obj;
+  constructor(
+    id = RNG.str("abcdefghijklmnopqrstuvwxyz0123456789", 64),
+    fields = { type: "", name: "", icNo: "" }
+  ) {
+    this.id = id;
+    this.fields = fields;
   }
 
   /**
-   * Adds a custom field in the ticket.
+   * Converts JSON object to Ticket instance.
+   * @param {Object} obj JSON representation of the ticket
+   * @returns {Ticket} Ticket instance
+   */
+  static fromJSON(obj) {
+    return new Ticket(obj.id, obj.fields);
+  }
+
+  /**
+   * Adds a custom field into the ticket.
    * @param {string} name Name of the field
    * @param {string} value Value of the field
    */
-  addField(name, value) {
-    this.obj.fields.push({
-      name: name,
-      value: value,
-    });
+  configFields(fields) {
+    this.fields.type = fields[0];
+    this.fields.name = fields[1];
+    this.fields.icNo = fields[2];
   }
 
   /**
-   * Generates raw ticket data.
-   * @returns {object} Object of ticket data
+   * Stores ticket into JSON object.
+   * @param {String} ticketNo Ticket number
+   * @returns {Object} JSON representation of the ticket
    */
-  generateRaw() {
-    return this.obj;
+  toJSON(ticketNo) {
+    return {
+      ticketNo: ticketNo,
+      id: this.id,
+      fields: this.fields,
+    };
   }
 
   /**
    * Generates QR code of the ticket.
-   * @param {integer} num Ticket number
+   * @param {integer} ticketNo Ticket number which is managed explicitly, neither handled nor stored by the Ticket instance
    * @returns {QRCode} QRCode object
    */
-  generateQR(num) {
-    return QRCode.create(`${this.obj.num}-${Hash.sha256(this.obj.id)}`, {
-      errorCorrectionLevel: "L",
-    });
+  toQR(ticketNo) {
+    // Data text: <Ticket No.>-<Hashed ticket ID>
+    return QRCode.create(`${ticketNo}-${Hash.sha256(this.id)}`);
   }
 }
 
