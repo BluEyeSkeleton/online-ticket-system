@@ -56,7 +56,7 @@ class TicketDatabase {
         return false;
       }
     });
-    data.tickets.push(ticket.toJSON(ticketNo));
+    data.tickets.unshift(ticket.toJSON(ticketNo));
     fs.writeFileSync("./data/tickets.json", JSON.stringify(data));
     return true;
   }
@@ -89,14 +89,15 @@ class TicketDatabase {
   static deleteTicket(id) {
     const raw = fs.readFileSync("./data/tickets.json");
     const data = JSON.parse(raw);
+    let status = false;
     data.tickets.forEach((ticket, i) => {
-      if (Hash.sha256(ticket.id) === id) {
+      if (ticket.id === id) {
         data.tickets.splice(i, 1);
         fs.writeFileSync("./data/tickets.json", JSON.stringify(data));
-        return true;
+        status = true;
       }
     });
-    return false;
+    return status;
   }
 }
 

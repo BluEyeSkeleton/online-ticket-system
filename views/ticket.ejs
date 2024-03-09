@@ -9,18 +9,28 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <%- include('./partials/head'); %>
-    <title>Ticket | OTiS</title>
+    <%- include('./partials/head'); %> <%- include('./partials/script'); %>
     <script>
       let placeholders = [],
-        editId = "";
+        editId = "",
+        form,
+        table,
+        inputs,
+        addButton;
       const fieldNames = ["ticketNo", "type", "name", "icNo"];
-      const form = document.getElementById("ticketForm");
+      $(document).ready(() => {
+        form = document.getElementById("ticketForm");
+        tableBody = document.getElementById("ticketsTableBody");
+        inputs = form.getElementsByTagName("input");
+        addButton = document.getElementById("addButton");
+        new DataTable("#ticketsTable", {
+          scrollY: "150px",
+          scrollCollapse: false,
+        });
+      });
       function onEditButtonClicked(id) {
         editId = id;
         const tr = document.getElementById(id);
-
-        const inputs = form.getElementsByTagName("input");
         inputs[0].value = "edit";
         inputs[1].value = id;
         const tds = tr.getElementsByTagName("td");
@@ -37,12 +47,56 @@
 
       function onCancelButtonClicked() {
         if (editId === "") return;
+        const tr = document.getElementById(editId);
+        const inputs = form.getElementsByTagName("input");
+        inputs[0].value = "";
+        inputs[1].value = "";
+        const tds = tr.getElementsByTagName("td");
+        for (let i = 0; i < tds.length - 1; i++) {
+          tds[i].innerHTML = placeholders[i];
+        }
+        tds[
+          tds.length - 1
+        ].innerHTML = `<a role="button" class="btn btn-info" onclick="onEditButtonClicked('${editId}')">Edit</a>\
+          <a role="button" class="btn btn-danger" onclick="onDeleteButtonClicked('${editId}')" >Delete</a>`;
+      }
+
+      function onDeleteButtonClicked(id) {
+        $("#ticketDeleteId").attr("value", id);
+        $("#ticketDeleteForm").trigger("submit");
+      }
+
+      function onAddButtonClicked() {
+        const tr = document.createElement("tr");
+        tr.id = "newTicket";
+        inputs[0].value = "add";
+        inputs[1].value = "";
+        tr.innerHTML = `<td><input name="${fieldNames[0]}" \
+          type="text" class="form-control input-md" required/></td>\
+          <td><input name="${fieldNames[1]}" \
+          type="text" class="form-control input-md" required/></td>\
+          <td><input name="${fieldNames[2]}" \
+          type="text" class="form-control input-md" required/></td>\
+          <td><input name="${fieldNames[3]}" \
+          type="text" class="form-control input-md" required/></td>\
+          <td><button name="submit" class="btn btn-success">Add</button>\
+          <a role="button" class="btn btn-danger" onclick="onCancelAddButtonClicked(${addButton})">\
+          Cancel</button></td>`;
+
+        tableBody.prepend(tr);
+        addButton.classList.add("disabled");
+      }
+
+      function onCancelAddButtonClicked() {
+        const tr = document.getElementById("newTicket");
+        tr.remove();
+        addButton.classList.remove("disabled");
       }
     </script>
+    <title>Ticket | OTiS</title>
   </head>
 
   <body>
-    <%- include('./partials/script'); %>
     <div class="container">
       <%- include('./partials/navbar'); %>
       <!-- Set active navigation button -->
@@ -52,22 +106,25 @@
       <!-- message (if any) -->
       <%- message %>
       <div class="jumbotron">
-        <h2 class="display-3">Ticket Manager</h2>
-        <p class="lead">Create tickets for your dear visitors</p>
         <form id="ticketForm" method="post" action="/ticket/modify">
           <input type="hidden" name="action" value="" />
           <input type="hidden" name="id" value="" />
-          <table class="table table-bordered">
+          <table
+            id="ticketsTable"
+            class="table table-bordered table-sm"
+            cellspacing="0"
+            width="100%"
+          >
             <thead>
               <tr>
-                <th id="ticketNo" scope="col">Ticket No.</th>
-                <th id="type" scope="col">Type</th>
-                <th id="name" scope="col">Name (with title)</th>
-                <th id="icNo" scope="col">Identification No.</th>
-                <th id="action" scope="col">Action</th>
+                <th id="ticketNo" class="th-sm" scope="col">Ticket No.</th>
+                <th id="type" class="th-sm" scope="col">Type</th>
+                <th id="name" class="th-sm" scope="col">Name (with title)</th>
+                <th id="icNo" class="th-sm" scope="col">Identification No.</th>
+                <th id="action" class="th-sm" scope="col">Action</th>
               </tr>
             </thead>
-            <tbody id="ticketsTable">
+            <tbody id="ticketsTableBody">
               <% tickets.forEach((ticket) => { %>
               <tr id="<%= ticket.id %>">
                 <td><%= ticket.ticketNo %></td>
@@ -82,19 +139,43 @@
                   >
                     Edit
                   </a>
+                  <a
+                    role="button"
+                    class="btn btn-danger"
+                    onclick="onDeleteButtonClicked('<%= ticket.id %>')"
+                  >
+                    Delete
+                  </a>
                 </td>
               </tr>
               <% }); %>
             </tbody>
           </table>
         </form>
-        <p>
-          <a role="button" class="btn btn-success" href="main">Start event!</a>
-          <a role="button" class="btn btn-info" href="ticket">
-            Create/Remove ticket
-          </a>
-          <a role="button" class="btn btn-info" href="event"> Manage event </a>
-        </p>
+        <form id="ticketDeleteForm" method="post" action="/ticket/modify">
+          <input type="hidden" name="action" value="delete" />
+          <input id="ticketDeleteId" type="hidden" name="id" value="" />
+        </form>
+        <a
+          id="addButton"
+          role="button"
+          class="btn btn-success"
+          onclick="onAddButtonClicked(this)"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+            fill="currentColor"
+            class="bi bi-plus"
+            viewBox="0 0 16 16"
+          >
+            <path
+              d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"
+            />
+          </svg>
+          Add new ticket...
+        </a>
       </div>
       <%- include('./partials/footer'); %>
     </div>
