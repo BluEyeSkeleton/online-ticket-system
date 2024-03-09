@@ -35,13 +35,13 @@ class Ticket {
 
   /**
    * Adds a custom field into the ticket.
-   * @param {string} name Name of the field
-   * @param {string} value Value of the field
+   * @param {Object} fields Custom fields in the ticket
+   * @param {String} fields.type Type of ticket
+   * @param {String} fields.name Ticket owner's name
+   * @param {String} fields.icNo Ticket owner's identification card number
    */
   configFields(fields) {
-    this.fields.type = fields[0];
-    this.fields.name = fields[1];
-    this.fields.icNo = fields[2];
+    this.fields = fields;
   }
 
   /**

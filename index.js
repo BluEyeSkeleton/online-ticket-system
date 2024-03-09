@@ -97,23 +97,53 @@ app.get("/ticket", (_, res) => {
   Automatic formatting is currently unsupported. \
   Data consistency shall fall under the admin's responsibility.</div>`;
   res.locals.tickets = TicketDatabase.fetchAll();
-  console.log(res.locals.tickets);
   res.render("ticket");
 });
 
 // Request: Modify ticket (id, ticketNo, type, name, icNo)
 app.post("/ticket/modify", (req, res) => {
-  const ticket = new Ticket(req.body.id, {
-    type: req.body.type,
-    name: req.body.name,
-    icNo: req.body.icNo,
-  });
-  if (TicketDatabase.editTicket(ticket, req.body.ticketNo)) {
-    req.session.alert = "success";
-    req.session.msg = "Ticket updated!";
-  } else {
-    req.session.alert = "danger";
-    req.session.msg = "Unknown error occurred, please try again.";
+  switch (req.body.action) {
+    case "add": {
+      const ticket = new Ticket();
+      ticket.configFields({
+        type: req.body.type,
+        name: req.body.name,
+        icNo: req.body.icNo,
+      });
+      if (TicketDatabase.addTicket(ticket, req.body.ticketNo)) {
+        req.session.alert = "success";
+        req.session.msg = "Ticket added!";
+      } else {
+        req.session.alert = "danger";
+        req.session.msg = "Unknown error occurred, please try again.";
+      }
+      break;
+    }
+    case "delete": {
+      if (TicketDatabase.deleteTicket(req.body.id)) {
+        req.session.alert = "success";
+        req.session.msg = "Ticket deleted!";
+      } else {
+        req.session.alert = "danger";
+        req.session.msg = "Unknown error occurred, please try again.";
+      }
+      break;
+    }
+    case "edit": {
+      const ticket = new Ticket(req.body.id, {
+        type: req.body.type,
+        name: req.body.name,
+        icNo: req.body.icNo,
+      });
+      if (TicketDatabase.editTicket(ticket, req.body.ticketNo)) {
+        req.session.alert = "success";
+        req.session.msg = "Ticket updated!";
+      } else {
+        req.session.alert = "danger";
+        req.session.msg = "Unknown error occurred, please try again.";
+      }
+      break;
+    }
   }
   res.redirect("/ticket");
   res.end();
