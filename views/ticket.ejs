@@ -66,6 +66,12 @@
         $("#ticketDeleteForm").trigger("submit");
       }
 
+      function onQRButtonClicked(id, ticketNo) {
+        $("#QR_ticketId").attr("value", id);
+        $("#QR_ticketNo").attr("value", ticketNo);
+        $("#QR_ticketForm").trigger("submit");
+      }
+
       function onAddButtonClicked() {
         const tr = document.createElement("tr");
         tr.id = "newTicket";
@@ -106,7 +112,7 @@
       <!-- message (if any) -->
       <%- message %>
       <div class="jumbotron">
-        <form id="ticketForm" method="post" action="/ticket/modify">
+        <form id="ticketForm" method="post" action="/ticket/api">
           <input type="hidden" name="action" value="" />
           <input type="hidden" name="id" value="" />
           <table
@@ -146,15 +152,39 @@
                   >
                     Delete
                   </a>
+                  <a
+                    role="button"
+                    class="btn btn-success"
+                    onclick="onQRButtonClicked('<%= ticket.id %>', '<%= ticket.ticketNo %>')"
+                  >
+                    QR
+                  </a>
+                  <a
+                    role="button"
+                    class="btn btn-success"
+                    onclick="onPNGButtonClicked('<%= ticket.id %>', '<%= ticket.ticketNo %>')"
+                  >
+                    PNG
+                  </a>
                 </td>
               </tr>
               <% }); %>
             </tbody>
           </table>
         </form>
-        <form id="ticketDeleteForm" method="post" action="/ticket/modify">
+        <form id="ticketDeleteForm" method="post" action="/ticket/api">
           <input type="hidden" name="action" value="delete" />
           <input id="ticketDeleteId" type="hidden" name="id" value="" />
+        </form>
+        <form
+          id="QR_ticketForm"
+          method="post"
+          action="/ticket/api"
+          target="_blank"
+        >
+          <input type="hidden" name="action" value="qr" />
+          <input id="QR_ticketId" type="hidden" name="id" value="" />
+          <input id="QR_ticketNo" type="hidden" name="ticketNo" value="" />
         </form>
         <a
           id="addButton"

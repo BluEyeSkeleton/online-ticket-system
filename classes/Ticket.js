@@ -1,4 +1,6 @@
 // Imports
+const fs = require("fs");
+
 const QRCode = require("qrcode");
 
 const RNG = require("../util/RNG");
@@ -58,13 +60,14 @@ class Ticket {
   }
 
   /**
-   * Generates QR code of the ticket.
-   * @param {integer} ticketNo Ticket number which is managed explicitly, neither handled nor stored by the Ticket instance
-   * @returns {QRCode} QRCode object
+   * Generates Raw QR code of the ticket as a buffer.
+   * @param {integer} ticketNo Ticket number which is managed externally, neither handled nor stored by the Ticket instance
+   * @returns {Buffer} Buffer object
    */
-  toQR(ticketNo) {
+  async toQRBuffer(ticketNo) {
     // Data text: <Ticket No.>-<Hashed ticket ID>
-    return QRCode.create(`${ticketNo}-${Hash.sha256(this.id)}`);
+    const buffer = await QRCode.toBuffer(`${ticketNo}-${Hash.sha256(this.id)}`);
+    return buffer;
   }
 }
 
