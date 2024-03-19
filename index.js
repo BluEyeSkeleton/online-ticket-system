@@ -67,8 +67,9 @@ app.use((req, res, next) => {
   ) {
     res.redirect("/");
     res.end();
+  } else {
+    next();
   }
-  next();
 });
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -100,8 +101,8 @@ app.get("/ticket", (_, res) => {
   res.render("ticket");
 });
 
-// Request: Modify ticket (id, ticketNo, type, name, icNo)
-app.post("/ticket/modify", (req, res) => {
+// Ticket API (id, ticketNo, ?type, ?name, ?icNo)
+app.post("/ticket/api", async (req, res) => {
   switch (req.body.action) {
     case "add": {
       const ticket = new Ticket();
@@ -117,6 +118,8 @@ app.post("/ticket/modify", (req, res) => {
         req.session.alert = "danger";
         req.session.msg = "Unknown error occurred, please try again.";
       }
+      res.redirect("/ticket");
+      res.end();
       break;
     }
     case "delete": {
@@ -127,6 +130,8 @@ app.post("/ticket/modify", (req, res) => {
         req.session.alert = "danger";
         req.session.msg = "Unknown error occurred, please try again.";
       }
+      res.redirect("/ticket");
+      res.end();
       break;
     }
     case "edit": {
@@ -142,11 +147,29 @@ app.post("/ticket/modify", (req, res) => {
         req.session.alert = "danger";
         req.session.msg = "Unknown error occurred, please try again.";
       }
+      res.redirect("/ticket");
+      res.end();
+      break;
+    }
+    case "qr": {
+      const data = `${req.body.ticketNo}-${Hash.sha256(req.body.id)}`;
+      const ticket = TicketDatabase.fetch(data);
+      if (!ticket) {
+        req.session.alert = "danger";
+        req.session.msg =
+          "Database integrity error detected, please re-create the ticket.";
+        res.redirect("/ticket");
+        res.end();
+      } else {
+        const qrCodeBuffer = await ticket.toQRBuffer(req.body.ticketNo);
+        res.writeHead(200, {
+          "Content-Type": "image/png",
+        });
+        res.end(qrCodeBuffer);
+      }
       break;
     }
   }
-  res.redirect("/ticket");
-  res.end();
 });
 
 // Authentication

@@ -1,6 +1,7 @@
 const fs = require("fs");
 const Ticket = require("../classes/Ticket");
 const Hash = require("./Hash");
+const path = require("path");
 
 /**
  * A utility class that loads and saves all tickets.
@@ -19,7 +20,9 @@ class TicketDatabase {
    * @return {Object[]} Array of all tickets in JSON format
    */
   static fetchAll() {
-    const raw = fs.readFileSync("./data/tickets.json");
+    const raw = fs.readFileSync(
+      path.join(process.env.DATA_PATH, "tickets.json")
+    );
     return JSON.parse(raw).tickets;
   }
 
@@ -31,15 +34,16 @@ class TicketDatabase {
   static fetch(data) {
     const raw = fs.readFileSync("./data/tickets.json");
     const params = data.split("-"); //[0] ticketNo, [1] hashedId
+    let ret = false;
     JSON.parse(raw).tickets.forEach((ticket) => {
       if (
         ticket.ticketNo === params[0] &&
         Hash.sha256(ticket.id) === params[1]
       ) {
-        return Ticket.fromJSON(ticket);
+        ret = Ticket.fromJSON(ticket);
       }
     });
-    return false;
+    return ret;
   }
 
   /**
