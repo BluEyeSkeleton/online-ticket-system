@@ -72,6 +72,12 @@
         $("#QR_ticketForm").trigger("submit");
       }
 
+      function onPNGButtonClicked(id, ticketNo) {
+        $("#PNG_ticketId").attr("value", id);
+        $("#PNG_ticketNo").attr("value", ticketNo);
+        $("#PNG_ticketForm").trigger("submit");
+      }
+
       function onAddButtonClicked() {
         const tr = document.createElement("tr");
         tr.id = "newTicket";
@@ -185,6 +191,16 @@
           <input type="hidden" name="action" value="qr" />
           <input id="QR_ticketId" type="hidden" name="id" value="" />
           <input id="QR_ticketNo" type="hidden" name="ticketNo" value="" />
+        </form>
+        <form
+          id="PNG_ticketForm"
+          method="post"
+          action="/ticket/api"
+          target="_blank"
+        >
+          <input type="hidden" name="action" value="png" />
+          <input id="PNG_ticketId" type="hidden" name="id" value="" />
+          <input id="PNG_ticketNo" type="hidden" name="ticketNo" value="" />
         </form>
         <a
           id="addButton"

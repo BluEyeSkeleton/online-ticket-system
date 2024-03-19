@@ -62,12 +62,30 @@ class Ticket {
   /**
    * Generates Raw QR code of the ticket as a buffer.
    * @param {integer} ticketNo Ticket number which is managed externally, neither handled nor stored by the Ticket instance
-   * @returns {Buffer} Buffer object
+   * @returns {Promise<Buffer>} Buffer object
    */
-  async toQRBuffer(ticketNo) {
-    // Data text: <Ticket No.>-<Hashed ticket ID>
-    const buffer = await QRCode.toBuffer(`${ticketNo}-${Hash.sha256(this.id)}`);
-    return buffer;
+  toQRBuffer(ticketNo) {
+    return new Promise((resolve, reject) => {
+      // Data text: <Ticket No.>-<Hashed ticket ID>
+      QRCode.toBuffer(`${ticketNo}-${Hash.sha256(this.id)}`)
+        .then((buffer) => {
+          resolve(buffer);
+        })
+        .catch((err) => {
+          reject(err);
+        });
+    });
+  }
+
+  /**
+   * Generates Raw QR code of the ticket as a writable stream.
+   * @param {integer} ticketNo Ticket number which is managed externally, neither handled nor stored by the Ticket instance
+   * @returns {fs.WriteStream} Stream
+   */
+  toQRWritable(ticketNo) {
+    const stream = new fs.WriteStream();
+    QRCode.toFileStream(stream, `${ticketNo}-${Hash.sha256(this.id)}`);
+    return stream;
   }
 }
 

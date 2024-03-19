@@ -24,6 +24,7 @@ const noVal = require("./util/noVal");
 const Hash = require("./util/Hash");
 const Ticket = require("./classes/Ticket");
 const TicketDatabase = require("./util/TicketDatabase");
+const TicketPrinter = require("./classes/TicketPrinter");
 
 // Initialize dotenv
 dotenv.config();
@@ -33,6 +34,9 @@ const PORT = process.env.PORT || 6969;
 const corsOptions = {
   origin: ["http://localhost", "https://localhost"],
 };
+
+// Initializes TicketPrinter
+const ticketPrinter = new TicketPrinter(1920, 720, "png");
 
 // Create a HTTP server with Express
 const app = express();
@@ -102,7 +106,7 @@ app.get("/ticket", (_, res) => {
 });
 
 // Ticket API (id, ticketNo, ?type, ?name, ?icNo)
-app.post("/ticket/api", async (req, res) => {
+app.post("/ticket/api", (req, res) => {
   switch (req.body.action) {
     case "add": {
       const ticket = new Ticket();
@@ -161,11 +165,36 @@ app.post("/ticket/api", async (req, res) => {
         res.redirect("/ticket");
         res.end();
       } else {
-        const qrCodeBuffer = await ticket.toQRBuffer(req.body.ticketNo);
         res.writeHead(200, {
           "Content-Type": "image/png",
         });
-        res.end(qrCodeBuffer);
+        ticket.toQRBuffer(req.body.ticketNo).then((buffer) => {
+          res.end(buffer);
+        });
+      }
+      break;
+    }
+    case "png": {
+      const data = `${req.body.ticketNo}-${Hash.sha256(req.body.id)}`;
+      const ticket = TicketDatabase.fetch(data);
+      if (!ticket) {
+        req.session.alert = "danger";
+        req.session.msg =
+          "Database integrity error detected, please re-create the ticket.";
+        res.redirect("/ticket");
+        res.end();
+      } else {
+        res.writeHead(200, {
+          "Content-Type": "image/png",
+        });
+        ticketPrinter
+          .print(ticket, req.body.ticketNo)
+          .then((buffer) => {
+            res.end(buffer);
+          })
+          .catch((err) => {
+            console.error(err);
+          });
       }
       break;
     }
@@ -188,6 +217,16 @@ app.post("/auth", (req, res) => {
     req.session.alert = "danger";
     req.session.msg = "Incorrect login credentials, please try again.";
   }
+  res.redirect("/");
+  res.end();
+});
+
+// Log Out
+app.get("/logout", (req, res) => {
+  delete req.session.auth;
+  delete req.session.username;
+  delete req.session.alert;
+  delete req.session.message;
   res.redirect("/");
   res.end();
 });
