@@ -1,7 +1,7 @@
 // Imports
 const fs = require("fs");
-const Ticket = require("../classes/Ticket");
-const Hash = require("./Hash");
+const Ticket = require("../classes/ticket");
+const Hash = require("./hash");
 const path = require("path");
 
 /**

@@ -4,7 +4,7 @@ const path = require("path");
 
 const { createCanvas, loadImage } = require("canvas");
 
-const Ticket = require("./Ticket");
+const Ticket = require("./ticket");
 
 /**
  * Canvas painter for tickets.

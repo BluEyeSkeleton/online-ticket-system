@@ -3,8 +3,8 @@ const fs = require("fs");
 
 const QRCode = require("qrcode");
 
-const RNG = require("../util/RNG");
-const Hash = require("../util/Hash");
+const RNG = require("../util/rng");
+const Hash = require("../util/hash");
 
 /**
  * Ticket class.
@@ -67,7 +67,7 @@ class Ticket {
   toQRBuffer(ticketNo) {
     return new Promise((resolve, reject) => {
       // Data text: <Ticket No.>-<Hashed ticket ID>
-      QRCode.toBuffer(`${ticketNo}-${Hash.sha256(this.id)}`)
+      QRCode.toBuffer(`${ticketNo}-${Hash.sha256(this.id)}`, { scale: 8 })
         .then((buffer) => {
           resolve(buffer);
         })
