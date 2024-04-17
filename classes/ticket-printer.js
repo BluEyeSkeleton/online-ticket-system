@@ -12,54 +12,63 @@ const Ticket = require("./ticket");
 class TicketPrinter {
   /**
    * Initializes the ticket canvas.
-   * @param {Number} width Width of ticket, default is `1920`
-   * @param {Number} height Height of ticket, default is `720`
+   * @param {Object} config Ticket design configuration
    * @param {String} type Type of ticket, default is `pdf`
    */
-  constructor(width = 1920, height = 720, type = "png") {
-    this.width = width;
-    this.height = height;
-    this.type = type;
+  constructor(config) {
+    this.config = config;
 
     // Load template image
-    loadImage(path.join(process.env.DATA_PATH, "img/ticketTemplate.png")).then(
-      (img) => {
-        this.templateImg = img;
-      }
-    );
+    loadImage(
+      path.join(process.env.DATA_PATH, "img", this.config.filename)
+    ).then((img) => {
+      this.templateImg = img;
+    });
   }
 
   /**
    * Generates digital ticket based on the info given.
    * @param {Ticket} ticket Ticket instance
    * @param {String} ticketNo Ticket number
+   * @param {"png"|"pdf"} filetype File type
    * @returns {Promise<Buffer>} Buffer of the ticket image
    */
-  print(ticket, ticketNo) {
-    const canvas = createCanvas(this.width, this.height, this.type);
+  print(ticket, ticketNo, filetype = "png") {
+    const canvas = createCanvas(
+      this.config.width,
+      this.config.height,
+      filetype
+    );
     const ctx = canvas.getContext("2d");
 
     return new Promise((resolve, reject) => {
       ctx.drawImage(this.templateImg, 0, 0);
 
-      ctx.font = "54px Impact";
-      ctx.fillText(ticketNo, 1748, 54); // Ticket number
-      ctx.fillText(ticket.fields.name, 450, 660); // Purchaser's name
-      ctx.fillText(ticket.fields.type, 1720, 660); // Ticket type
+      // Ticket number
+      ctx.font = this.config.ticketNo.font;
+      ctx.textAlign = this.config.ticketNo.textAlign;
+      ctx.fillStyle = this.config.ticketNo.fillStyle;
+      ctx.fillText(
+        `NO.${ticketNo}`,
+        this.config.ticketNo.x,
+        this.config.ticketNo.y
+      );
 
-      // Load template image
+      // Purchaser's name
+      ctx.font = this.config.name.font;
+      ctx.textAlign = this.config.name.textAlign;
+      ctx.fillStyle = this.config.name.fillStyle;
+      ctx.fillText(ticket.fields.name, this.config.name.x, this.config.name.y);
+
+      // Load QR image
       ticket
         .toQRBuffer(ticketNo)
         .then((buffer) => {
           return loadImage(buffer);
         })
         .then((img) => {
-          ctx.drawImage(img, 120, 250);
-
-          canvas.toBuffer((err, buffer) => {
-            if (err) reject(err);
-            resolve(buffer);
-          });
+          ctx.drawImage(img, this.config.qr.x, this.config.qr.y);
+          resolve(canvas.toBuffer());
         });
     });
   }

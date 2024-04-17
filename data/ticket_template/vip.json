@@ -1,0 +1,24 @@
+{
+  "type": "vip",
+  "filename": "vip.jpg",
+  "width": 2700,
+  "height": 6300,
+  "ticketNo": {
+    "font": "bold 128px Courier New",
+    "textAlign": "left",
+    "fillStyle": "#FFD700",
+    "x": 100,
+    "y": 6200
+  },
+  "name": {
+    "font": "bold 128px serif",
+    "textAlign": "right",
+    "fillStyle": "black",
+    "x": 2600,
+    "y": 6200
+  },
+  "qr": {
+    "x": 258.5,
+    "y": 5241.5
+  }
+}

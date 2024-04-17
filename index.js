@@ -1,11 +1,3 @@
-/*
- * ############
- * # index.js #
- * ############
- *
- * Entry point for OTiS server.
- */
-
 // Initialize dotenv
 require("dotenv").config();
 

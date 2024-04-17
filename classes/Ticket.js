@@ -67,7 +67,7 @@ class Ticket {
   toQRBuffer(ticketNo) {
     return new Promise((resolve, reject) => {
       // Data text: <Ticket No.>-<Hashed ticket ID>
-      QRCode.toBuffer(`${ticketNo}-${Hash.sha256(this.id)}`, { scale: 8 })
+      QRCode.toBuffer(`${ticketNo}-${Hash.sha256(this.id)}`, { scale: 16 })
         .then((buffer) => {
           resolve(buffer);
         })

@@ -1,0 +1,14 @@
+{
+  "type": "_example",
+  "bg": "background_image.jpg",
+  "width": 1920,
+  "height": 720,
+  "texts": [
+    {
+      "id": "YourIDHere",
+      "font": "Font Name",
+      "x": 0,
+      "y": 0
+    }
+  ]
+}

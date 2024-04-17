@@ -48,6 +48,13 @@ module.exports = {
     ) {
       req.session.auth = true;
       req.session.username = username;
+    } else if (
+      // Default admin
+      username === process.env.CLIENT_USERNAME &&
+      password === process.env.CLIENT_PASSWORD
+    ) {
+      req.session.auth = true;
+      req.session.username = username;
     } else {
       req.session.alert = "danger";
       req.session.msg = "Incorrect login credentials, please try again.";

@@ -6,7 +6,7 @@ module.exports = {
     if (noVal(req.session.auth) || noVal(req.session.username))
       // Redirects user to login page if unauthorized
       res.render("login");
-    else res.render("index");
+    else res.render(req.session.username === "admin" ? "index" : "scanner");
   },
 
   ticket: (_, res) => {

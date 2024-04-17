@@ -4,7 +4,15 @@ const TicketPrinter = require("../classes/ticket-printer");
 const Hash = require("../util/hash");
 
 // Initializes TicketPrinter
-const ticketPrinter = new TicketPrinter(1920, 720, "png");
+const ticketPrinterVIP = new TicketPrinter(
+  require("../data/ticket_template/vip.json")
+);
+const ticketPrinterNormal = new TicketPrinter(
+  require("../data/ticket_template/normal.json")
+);
+const ticketPrinterStudent = new TicketPrinter(
+  require("../data/ticket_template/student.json")
+);
 
 module.exports = {
   // (id, ticketNo, ?type, ?name, ?icNo)
@@ -76,7 +84,8 @@ module.exports = {
         }
         break;
       }
-      case "png": {
+      case "png":
+      case "pdf": {
         const data = `${req.body.ticketNo}-${Hash.sha256(req.body.id)}`;
         const ticket = TicketDatabase.fetch(data);
         if (!ticket) {
@@ -86,11 +95,24 @@ module.exports = {
           res.redirect("/ticket");
           res.end();
         } else {
+          // Encode name as it might contain Chinese characters
+          const name = encodeURIComponent(ticket.fields.name);
+
+          // Write HTTP header
           res.writeHead(200, {
-            "Content-Type": "image/png",
+            "Content-Type":
+              req.body.action === "png" ? "image/png" : "application/pdf",
+            "Content-Disposition":
+              "attachment; " +
+              `filename=${req.body.ticketNo}_${name}.${req.body.action}`,
           });
-          ticketPrinter
-            .print(ticket, req.body.ticketNo)
+          (ticket.fields.type === "vip"
+            ? ticketPrinterVIP
+            : ticket.fields.type === "student"
+            ? ticketPrinterStudent
+            : ticketPrinterNormal
+          )
+            .print(ticket, req.body.ticketNo, req.body.action)
             .then((buffer) => {
               res.end(buffer);
             })

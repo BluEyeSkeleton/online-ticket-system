@@ -78,6 +78,12 @@
         $("#PNG_ticketForm").trigger("submit");
       }
 
+      function onPDFButtonClicked(id, ticketNo) {
+        $("#PDF_ticketId").attr("value", id);
+        $("#PDF_ticketNo").attr("value", ticketNo);
+        $("#PDF_ticketForm").trigger("submit");
+      }
+
       function onAddButtonClicked() {
         const tr = document.createElement("tr");
         tr.id = "newTicket";
@@ -156,8 +162,8 @@
                     class="btn btn-danger"
                     onclick="onDeleteButtonClicked('<%= ticket.id %>')"
                   >
-                    Delete
-                  </a>
+                    Delete </a
+                  ><br />
                   <a
                     role="button"
                     class="btn btn-success"
@@ -171,6 +177,13 @@
                     onclick="onPNGButtonClicked('<%= ticket.id %>', '<%= ticket.ticketNo %>')"
                   >
                     PNG
+                  </a>
+                  <a
+                    role="button"
+                    class="btn btn-success"
+                    onclick="onPDFButtonClicked('<%= ticket.id %>', '<%= ticket.ticketNo %>')"
+                  >
+                    PDF
                   </a>
                 </td>
               </tr>
@@ -201,6 +214,16 @@
           <input type="hidden" name="action" value="png" />
           <input id="PNG_ticketId" type="hidden" name="id" value="" />
           <input id="PNG_ticketNo" type="hidden" name="ticketNo" value="" />
+        </form>
+        <form
+          id="PDF_ticketForm"
+          method="post"
+          action="/ticket/api"
+          target="_blank"
+        >
+          <input type="hidden" name="action" value="pdf" />
+          <input id="PDF_ticketId" type="hidden" name="id" value="" />
+          <input id="PDF_ticketNo" type="hidden" name="ticketNo" value="" />
         </form>
         <a
           id="addButton"
