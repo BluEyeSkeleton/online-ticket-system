@@ -1,3 +1,6 @@
+# Ticket data
+data/tickets.json
+
 # Logs
 logs
 *.log
