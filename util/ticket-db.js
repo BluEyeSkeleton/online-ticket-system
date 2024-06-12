@@ -3,6 +3,7 @@ const fs = require("fs");
 const Ticket = require("../classes/ticket");
 const Hash = require("./hash");
 const path = require("path");
+const { log } = require("console");
 
 /**
  * A utility class that loads and saves all tickets.
@@ -42,9 +43,19 @@ class TicketDatabase {
         Hash.sha256(ticket.id) === params[1]
       ) {
         ret = Ticket.fromJSON(ticket);
+        return;
       }
     });
     return ret;
+  }
+
+  /**
+   * Parses the ticket number from raw QR data string.
+   * @param {String} data Raw QR data string
+   * @return {String} Ticket number
+   */
+  static parseTicketNo(data) {
+    return data.split("-")[0];
   }
 
   /**

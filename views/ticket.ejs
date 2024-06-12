@@ -18,13 +18,13 @@
         inputs,
         addButton;
       const fieldNames = ["ticketNo", "type", "name", "icNo"];
-      $(document).ready(() => {
+      $(() => {
         form = document.getElementById("ticketForm");
         tableBody = document.getElementById("ticketsTableBody");
         inputs = form.getElementsByTagName("input");
         addButton = document.getElementById("addButton");
         new DataTable("#ticketsTable", {
-          scrollY: "150px",
+          scrollY: "450px",
           scrollCollapse: false,
           paging: false,
         });

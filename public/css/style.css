@@ -10,3 +10,28 @@ table.dataTable thead .sorting_desc_disabled:after,
 table.dataTable thead .sorting_desc_disabled:before {
   bottom: 0.5em;
 }
+
+.event-body {
+  background-image: url("/img/backdrop.png");
+  overflow-x: hidden;
+  overflow-y: hidden;
+}
+
+#video {
+  position: fixed;
+  top: 120px;
+  left: 160px;
+  width: 960px;
+  border: 3px solid #73ad21;
+}
+
+#status {
+  position: fixed;
+  bottom: 16px;
+  left: 160px;
+  width: 960px;
+  border: 3px solid #73ad21;
+}
+#status > * {
+  font-size: x-large;
+}

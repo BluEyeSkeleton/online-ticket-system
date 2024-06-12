@@ -9,6 +9,10 @@ module.exports = {
     else res.render(req.session.username === "admin" ? "index" : "scanner");
   },
 
+  main: (req, res) => {
+    res.render("main");
+  },
+
   ticket: (_, res) => {
     // Temporary warning for data auto-formatting
     res.locals.message += `\

@@ -124,4 +124,13 @@ module.exports = {
       }
     }
   },
+  main: (req, res) => {
+    const ticket = TicketDatabase.fetch(req.body.data);
+    if (!ticket) res.status(403).send(null);
+    else
+      res.send({
+        ticketNo: TicketDatabase.parseTicketNo(req.body.data),
+        name: ticket.fields.name,
+      });
+  },
 };
