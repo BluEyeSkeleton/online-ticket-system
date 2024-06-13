@@ -2,7 +2,7 @@
 const Ticket = require("../classes/ticket");
 const TicketDatabase = require("../util/ticket-db");
 
-const NAMES = [
+/*const NAMES = [
   "CHAN JUN HONG",
   "NG JING XI",
   "TAN ZUN ZHE",
@@ -29,6 +29,78 @@ const NAMES = [
   "CHEW WEI YEH",
   "LIM KUI YAN",
   "TAN JIN XIAN",
+];*/
+
+const NAMES = [
+  "LEE CHENG JIN",
+  "LIM CHUN KEONG",
+  "MARTIN TEOH WEI JUN",
+  "NG WENG SENG",
+  "ONG HAN THUNG",
+  "OOI LI HONG",
+  "SEAH SHAO ZHI",
+  "TAN HAO KEAT",
+  "TEOH EE SHEN",
+  "AUGUST SEE KAI SHENG",
+  "BAN TENG QIAN",
+  "CHEAH HONG TATT",
+  "CHIAM YU HENN",
+  "CHUN YONG LIM",
+  "DERICK CHEN YIH JOU",
+  "HEH ZI YANG",
+  "HOR MING HAN MARCUS",
+  "KHOR ZHENG HONG",
+  "LAI YAN KIN",
+  "LIM JUN YAN",
+  "LIM KELVIN",
+  "LOH REY HENG",
+  "LOO JUN HONG",
+  "ONG HONG FU",
+  "ONG QI HOM",
+  "SAW ZHUN WAI",
+  "SHAUN LIM KHAI XI",
+  "SOO EU ZEN",
+  "TAN XUAN ZHENG",
+  "TAN ZE ZHEN",
+  "YAP HERN THAU",
+  "YAP YU YANG",
+  "CHEAH SHIN HIANG",
+  "CHEW WEI XUAN",
+  "KANG CHUIN HAO",
+  "LIM HORNG JIAN",
+  "CHOONG ZI YOU",
+  "DESMOND TAN YU HONG",
+  "EETHAN KHAW ZHI JIE",
+  "LEE WEI TIAN",
+  "LEE MING YANG",
+  "OOI XIAN WOEI",
+  "ANG XIN ZHE",
+  "CALEB LEAN",
+  "ENG XIANG DEE",
+  "LIM KAI ZE",
+  "VERNON TOH YU ZE",
+  "ANDERSON TAN ZHE SHEN",
+  "CALEB ONG",
+  "CHEAH JAN SERN",
+  "OOI WEI HONG",
+  "TAN EE HUNG",
+  "YONG ZI HENG",
+  "CHONG TONG YUNG",
+  "LIM ZI SHEN",
+  "LOW YI XIAN",
+  "TEOH CHEE HENG",
+  "NEOH LI KEN",
+  "SOONG CHENG FONG",
+  "TAN WILLY",
+  "LIM CHEN XUE",
+  "RYAN KANG XUE CONG",
+  "LOH ZI XUAN",
+  "JENSERN LIM JUN SHEN",
+  "PHOON CHEE HANG",
+  "NG POOI YI",
+  "FOONG WEI KHYE",
+  "CHEANG XING CI",
+  "LEONARD YEOH WEI YI",
 ];
 
 console.log("started");
@@ -42,7 +114,7 @@ for (let i = 0; i < NAMES.length; i++) {
   });
   TicketDatabase.addTicket(
     ticket,
-    `${i + 1}`.length > 1 ? `50${i + 1}` : `500${i + 1}`
+    `${i + 27}`.length > 1 ? `50${i + 27}` : `500${i + 27}`
   );
 }
 console.log("done");

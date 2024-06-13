@@ -9,7 +9,7 @@ module.exports = {
     else res.render(req.session.username === "admin" ? "index" : "scanner");
   },
 
-  main: (req, res) => {
+  main: (_, res) => {
     res.render("main");
   },
 

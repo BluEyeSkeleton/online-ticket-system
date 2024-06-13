@@ -1,7 +1,9 @@
 const Ticket = require("../classes/ticket");
 const TicketDatabase = require("../util/ticket-db");
 const TicketPrinter = require("../classes/ticket-printer");
+const TicketLive = require("../classes/ticket-live");
 const Hash = require("../util/hash");
+const noVal = require("../util/noval");
 
 // Initializes TicketPrinter
 const ticketPrinterVIP = new TicketPrinter(
@@ -13,6 +15,9 @@ const ticketPrinterNormal = new TicketPrinter(
 const ticketPrinterStudent = new TicketPrinter(
   require("../data/ticket_template/student.json")
 );
+
+// Initializes TicketLive
+const live = new TicketLive();
 
 module.exports = {
   // (id, ticketNo, ?type, ?name, ?icNo)
@@ -127,10 +132,13 @@ module.exports = {
   main: (req, res) => {
     const ticket = TicketDatabase.fetch(req.body.data);
     if (!ticket) res.status(403).send(null);
-    else
+    else {
+      const ticketNo = TicketDatabase.parseTicketNo(req.body.data);
+      live.addEntry(ticket, ticketNo);
       res.send({
-        ticketNo: TicketDatabase.parseTicketNo(req.body.data),
+        ticketNo: ticketNo,
         name: ticket.fields.name,
       });
+    }
   },
 };

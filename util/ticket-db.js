@@ -3,7 +3,6 @@ const fs = require("fs");
 const Ticket = require("../classes/ticket");
 const Hash = require("./hash");
 const path = require("path");
-const { log } = require("console");
 
 /**
  * A utility class that loads and saves all tickets.
