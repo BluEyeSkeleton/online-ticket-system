@@ -9,6 +9,7 @@
 
       $(() => {
         const video = document.getElementById("video");
+        const audio = document.getElementById("sfx");
         const scanner = new QrScanner(
           video,
           (result) => {
@@ -19,6 +20,7 @@
               success: (data, status) => {
                 $("#ticketNo").attr("value", data.ticketNo);
                 $("#name").attr("value", data.name);
+                audio.play();
               },
               error: () => {
                 $("#ticketNo").attr("value", "查无此票");
@@ -41,6 +43,10 @@
   <body class="event-body">
     <%- include('./partials/script'); %>
     <video id="video"></video>
+    <audio id="sfx">
+      <source src="sfx/ding.mp3" type="audio/mp3" />
+      Your browser does not support the audio element.
+    </audio>
     <div class="container">
       <div id="status" class="jumbotron">
         <p class="lead">
